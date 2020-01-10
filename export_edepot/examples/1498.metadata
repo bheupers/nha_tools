@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<ToPX xmlns="http://www.nationaalarchief.nl/ToPX/v2.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <aggregatie>
+    <identificatiekenmerk>1498</identificatiekenmerk>
+    <aggregatieniveau>Archief</aggregatieniveau>
+    <naam>Gemeentebestuur van Zandvoort (Gemeente Zandvoort)</naam>
+    <dekking>
+      <inTijd>
+        <begin>
+          <jaar>1980</jaar>
+        </begin>
+        <eind>
+          <jaar>1989</jaar>
+        </eind>
+      </inTijd>
+      <geografischGebied />
+    </dekking>
+    <openbaarheid>
+      <omschrijvingBeperkingen>gedeeltelijk openbaar</omschrijvingBeperkingen>
+      <datumOfPeriode>
+        <jaar>2019</jaar>
+      </datumOfPeriode>
+    </openbaarheid>
+  </aggregatie>
+</ToPX>
