@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ToPX xmlns="http://www.nationaalarchief.nl/ToPX/v2.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<aggregatie>
+		<identificatiekenmerk>Identificatiekenmerk</identificatiekenmerk>
+		<aggregatieniveau>Dossier</aggregatieniveau>
+		<naam>Naam</naam>
+		<classificatie>
+			<code>Code</code>
+			<omschrijving>Omschrijving</omschrijving>
+			<bron>Bron</bron>
+			<datumOfPeriode>
+				<datum>2006-05-04</datum>
+			</datumOfPeriode>
+		</classificatie>
+		<omschrijving>Omschrijving</omschrijving>
+		<plaats>Plaats</plaats>
+		<dekking>
+			<inTijd>
+				<begin>
+					<jaar>2080</jaar>
+				</begin>
+				<eind>
+					<jaar>2080</jaar>
+				</eind>
+			</inTijd>
+			<geografischGebied/>
+		</dekking>
+		<externIdentificatiekenmerk>
+			<kenmerkSysteem/>
+			<nummerBinnenSysteem>Nummer binnen het systeem</nummerBinnenSysteem>
+		</externIdentificatiekenmerk>
+		<taal/>
+		<eventGeschiedenis>
+			<datumOfPeriode>
+				<datum>2006-05-04</datum>
+			</datumOfPeriode>
+			<type>Type</type>
+			<beschrijving/>
+			<verantwoordelijkeFunctionaris>Verantwoordelijke functionaris</verantwoordelijkeFunctionaris>
+		</eventGeschiedenis>
+		<eventPlan>
+			<datumOfPeriode>
+				<datum>2006-05-04</datum>
+			</datumOfPeriode>
+			<type>Conversie</type>
+			<beschrijving/>
+			<aanleiding/>
+		</eventPlan>
+		<relatie>
+			<relatieID>Relatie ID</relatieID>
+			<typeRelatie>Type relatie</typeRelatie>
+			<datumOfPeriode>
+				<datum>2006-05-04</datum>
+			</datumOfPeriode>
+		</relatie>
+		<context>
+			<actor>
+				<identificatiekenmerk>Identicatiekenmerk</identificatiekenmerk>
+				<aggregatieniveau/>
+				<geautoriseerdeNaam>Geatutoiseerde naam</geautoriseerdeNaam>
+				<plaats/>
+				<jurisdictie/>
+			</actor>
+			<activiteit>
+				<identificatiekenmerk/>
+				<aggregatieniveau/>
+				<naam>Naam</naam>
+			</activiteit>
+		</context>
+		<gebruiksrechten>
+			<omschrijvingVoorwaarden>Geen gebruiksrechten</omschrijvingVoorwaarden>
+			<datumOfPeriode>
+				<jaar>2080</jaar>
+			</datumOfPeriode>
+		</gebruiksrechten>
+		<vertrouwelijkheid>
+			<classificatieNiveau>Niet vertrouwelijk</classificatieNiveau>
+			<datumOfPeriode>
+				<jaar>2080</jaar>
+			</datumOfPeriode>
+		</vertrouwelijkheid>
+		<openbaarheid>
+			<omschrijvingBeperkingen>Openbaar</omschrijvingBeperkingen>
+			<datumOfPeriode>
+				<jaar>2080</jaar>
+			</datumOfPeriode>
+		</openbaarheid>
+		<vorm>
+			<redactieGenre></redactieGenre>
+			<verschijningsvorm></verschijningsvorm>
+			<structuur></structuur>
+		</vorm>
+		<integriteit></integriteit>
+		<generiekeMetadata>
+		</generiekeMetadata>
+	</aggregatie>
+</ToPX>

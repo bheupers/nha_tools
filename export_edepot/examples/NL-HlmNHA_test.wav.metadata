@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<ToPX xmlns="http://www.nationaalarchief.nl/ToPX/v2.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <bestand>
+    <identificatiekenmerk>NL-HlmNHA_1498_1073</identificatiekenmerk>
+    <aggregatieniveau>Bestand</aggregatieniveau>
+    <naam>Raadsvergadering, 1980-11-15 (1/1)</naam>
+    <dekking>
+      <inTijd>
+        <begin>
+          <jaar>1980</jaar>
+        </begin>
+        <eind>
+          <jaar>1980</jaar>
+        </eind>
+      </inTijd>
+      <geografischGebied />
+    </dekking>
+    <openbaarheid>
+      <omschrijvingBeperkingen>Openbaar</omschrijvingBeperkingen>
+      <datumOfPeriode>
+        <jaar>2019</jaar>
+      </datumOfPeriode>
+    </openbaarheid>
+    <vorm>
+      <redactieGenre>Bestand</redactieGenre>
+      <verschijningsvorm />
+      <structuur />
+    </vorm>
+    <formaat>
+      <identificatiekenmerk>1002</identificatiekenmerk>
+      <bestandsnaam>
+        <naam>NL-HlmNHA_1498_1073</naam>
+        <extensie>.wav</extensie>
+      </bestandsnaam>
+      <type />
+      <omvang>1035775542</omvang>
+      <bestandsformaat />
+      <fysiekeIntegriteit>
+        <algoritme>SHA-1</algoritme>
+        <waarde>acc188df30a82d3b04c79df95111a5908a5557a8</waarde>
+        <datumEnTijd>2019-09-25T15:14:27</datumEnTijd>
+      </fysiekeIntegriteit>
+    </formaat>
+    <generiekeMetadata>
+      <producthulpcategorie type="string" prompt="producthulpcategorie">Bouwvergunning
+      </producthulpcategorie>
+      <bliep>
+         bliep
+      </bliep>
+    </generiekeMetadata>
+  </bestand>
+</ToPX>
