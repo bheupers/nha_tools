@@ -2,7 +2,7 @@
 <ToPX xmlns="http://www.nationaalarchief.nl/ToPX/v2.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<aggregatie>
 		<identificatiekenmerk>{{ data.identificatiekenmerk }}</identificatiekenmerk>
-		<aggregatieniveau>Archief</aggregatieniveau>
+		<aggregatieniveau>Dossier</aggregatieniveau>
 		<naam>{{ data.naam }}</naam>
 		{% if data.classificatie %}
 		<classificatie>
@@ -20,15 +20,21 @@
 		{% endif %}
 		{% if data.dekking %}
 		<dekking>
+		    {% if data.dekking.intijd %}
 			<inTijd>
 				<begin>
-					<jaar>2080</jaar>
+					<jaar>{{ data.dekking.intijd.begin.jaar }}</jaar>
 				</begin>
 				<eind>
-					<jaar>2080</jaar>
+					<jaar>{{ data.dekking.intijd.eind.jaar }}</jaar>
 				</eind>
 			</inTijd>
-			<geografischGebied/>
+			{% endif %}
+			{% if data.dekking.geografischgebied %}
+			{% for adres in data.dekking.geografischgebied.adressen %}
+			<geografischGebied>{{ adres }} </geografischGebied>
+			{% endfor %}
+			{% endif %}
 		</dekking>
 		{% endif %}
 		{% if data.externIdentificatiekenmerk %}
@@ -44,7 +50,7 @@
 				<datum>2006-05-04</datum>
 			</datumOfPeriode>
 			<type>Type</type>
-			<beschrijving>Beschrijving</beschrijving>
+			<beschrijving/>
 			<verantwoordelijkeFunctionaris>Verantwoordelijke functionaris</verantwoordelijkeFunctionaris>
 		</eventGeschiedenis>
 		{% endif %}
@@ -70,9 +76,9 @@
 		{% if data.context %}
 		<context>
 			<actor>
-				<identificatiekenmerk>Indentificatiekenmerk</identificatiekenmerk>
+				<identificatiekenmerk>Identicatiekenmerk</identificatiekenmerk>
 				<aggregatieniveau/>
-				<geautoriseerdeNaam>Naam</geautoriseerdeNaam>
+				<geautoriseerdeNaam>Geatutoiseerde naam</geautoriseerdeNaam>
 				<plaats/>
 				<jurisdictie/>
 			</actor>
@@ -109,12 +115,13 @@
 		{% endif %}
         {% if data.vorm %}
 		<vorm>
-            <redactieGenre></redactieGenre>
-            <verschijningsvorm></verschijningsvorm>
-            <structuur></structuur>
-        </vorm>
-        {% endif %}
-		<integriteit/>
-		<generiekeMetadata/>
+			<redactieGenre></redactieGenre>
+			<verschijningsvorm></verschijningsvorm>
+			<structuur></structuur>
+		</vorm>
+		{% endif %}
+		<integriteit></integriteit>
+		<generiekeMetadata>
+		</generiekeMetadata>
 	</aggregatie>
 </ToPX>

@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ToPX xmlns="http://www.nationaalarchief.nl/ToPX/v2.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<aggregatie>
+	<bestand>
 		<identificatiekenmerk>{{ data.identificatiekenmerk }}</identificatiekenmerk>
-		<aggregatieniveau>Archief</aggregatieniveau>
+		<aggregatieniveau>Bestand</aggregatieniveau>
 		<naam>{{ data.naam }}</naam>
 		{% if data.classificatie %}
 		<classificatie>
-			<code>{{ data.classificatie.code }}</code>
-			<omschrijving>{{ data.classificatie.omschrijving }}</omschrijving>
-			<bron>{{ data.classificatie.bron }}</bron>
+			<code>Code</code>
+				<omschrijving>Omschrijving</omschrijving>
+			<bron>Bron</bron>
 			<datumOfPeriode>
-				<datum>{{ data.classificatie.datum}}</datum>
+				<datum>2006-05-04</datum>
 			</datumOfPeriode>
 		</classificatie>
 		{% endif %}
+		{% if data.omschrijving %}
 		<omschrijving>{{ data.omschrijving }}</omschrijving>
-		{% if data.plaats %}
-		<plaats>{{ data.plaats }}</plaats>
 		{% endif %}
+		<plaats/>
 		{% if data.dekking %}
 		<dekking>
 			<inTijd>
 				<begin>
-					<jaar>2080</jaar>
+					<jaar>2016</jaar>
 				</begin>
 				<eind>
-					<jaar>2080</jaar>
+					<jaar>2016</jaar>
 				</eind>
 			</inTijd>
 			<geografischGebied/>
@@ -41,17 +41,17 @@
 		{% if data.eventGeschiedenis %}
 		<eventGeschiedenis>
 			<datumOfPeriode>
-				<datum>2006-05-04</datum>
+				<datum>2080-01-31</datum>
 			</datumOfPeriode>
 			<type>Type</type>
-			<beschrijving>Beschrijving</beschrijving>
+			<beschrijving/>
 			<verantwoordelijkeFunctionaris>Verantwoordelijke functionaris</verantwoordelijkeFunctionaris>
 		</eventGeschiedenis>
 		{% endif %}
 		{% if data.eventPlan %}
 		<eventPlan>
 			<datumOfPeriode>
-				<datum>2006-05-04</datum>
+				<datum>2080-01-31</datum>
 			</datumOfPeriode>
 			<type>Conversie</type>
 			<beschrijving/>
@@ -61,18 +61,18 @@
         {% if data.relatie %}
 		<relatie>
 			<relatieID>Relatie ID</relatieID>
-			<typeRelatie>Type relatie</typeRelatie>
+			<typeRelatie>Relatie type</typeRelatie>
 			<datumOfPeriode>
-				<datum>2006-05-04</datum>
+				<datum>2080-01-31</datum>
 			</datumOfPeriode>
 		</relatie>
 		{% endif %}
 		{% if data.context %}
 		<context>
 			<actor>
-				<identificatiekenmerk>Indentificatiekenmerk</identificatiekenmerk>
+				<identificatiekenmerk>Identificatiekenmerk</identificatiekenmerk>
 				<aggregatieniveau/>
-				<geautoriseerdeNaam>Naam</geautoriseerdeNaam>
+				<geautoriseerdeNaam>Geautoriseerde naam</geautoriseerdeNaam>
 				<plaats/>
 				<jurisdictie/>
 			</actor>
@@ -87,7 +87,7 @@
 		<gebruiksrechten>
 			<omschrijvingVoorwaarden>Geen gebruiksrechten</omschrijvingVoorwaarden>
 			<datumOfPeriode>
-				<jaar>2080</jaar>
+				<jaar>2016</jaar>
 			</datumOfPeriode>
 		</gebruiksrechten>
 		{% endif %}
@@ -109,12 +109,55 @@
 		{% endif %}
         {% if data.vorm %}
 		<vorm>
-            <redactieGenre></redactieGenre>
-            <verschijningsvorm></verschijningsvorm>
-            <structuur></structuur>
-        </vorm>
-        {% endif %}
-		<integriteit/>
+			<redactieGenre>Genre</redactieGenre>
+			<verschijningsvorm/>
+			<structuur/>
+		</vorm>
+		{% endif %}
+		{% if data.integriteit %}
+		<integriteit>Integriteit</integriteit>
+		{% endif %}
+		{% if data.formaat %}
+		<formaat>
+			<identificatiekenmerk>{{ data.formaat.identificatiekenmerk }}</identificatiekenmerk>
+			<bestandsnaam>
+				<naam>{{ data.formaat.bestandsnaam.naam }}</naam>
+				<extensie>{{ data.formaat.bestandsnaam.extensie }}</extensie>
+			</bestandsnaam>
+			<type/>
+			<omvang>{{ data.formaat.omvang }}</omvang>
+			<bestandsformaat/>
+			{% if data.formaat.creatieapplicatie %}
+			<creatieapplicatie>
+				<naam/>
+				<versie/>
+				<datumAanmaak>2080-01-31</datumAanmaak>
+			</creatieapplicatie>
+			{% endif %}
+			{% if data.formaat.fysiekeintegriteit %}
+			<fysiekeIntegriteit>
+				<algoritme>{{ data.formaat.fysiekeintegriteit.algoritme }}</algoritme>
+				<waarde>{{ data.formaat.fysiekeintegriteit.waarde }}</waarde>
+				<datumEnTijd>{{ data.formaat.fysiekeintegriteit.datumentijd }}</datumEnTijd>
+			</fysiekeIntegriteit>
+            {% endif %}
+            {% if data.formaat.datumaanmaak %}
+			<datumAanmaak>2080-01-31</datumAanmaak>
+			{% endif %}
+			{% if data.formaat.eventplan %}
+ 			<eventPlan>
+				<datumOfPeriode>
+					<datum>2080-01-31</datum>
+				</datumOfPeriode>
+				<type>Type</type>
+				<beschrijving/>
+				<aanleiding/>
+			</eventPlan>
+			{% endif %}
+			<relatie/>
+		</formaat>
+		{% endif %}
+
 		<generiekeMetadata/>
-	</aggregatie>
+	</bestand>
 </ToPX>
