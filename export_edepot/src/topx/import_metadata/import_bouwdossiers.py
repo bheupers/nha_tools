@@ -1,3 +1,4 @@
+import argparse
 from datetime import datetime
 from jinja2 import Environment, PackageLoader
 import hashlib
@@ -91,6 +92,7 @@ def import_bouwdossiers(env, dms_dir: str, dest_dir: str):
         log.error('Geen XML gevonden in {dms_dir}')
         return
 
+    total_metadatafiles = 0
     if os.path.isdir(dest_dir):
         shutil.rmtree(dest_dir)
     Path(dest_dir).mkdir(parents=True, exist_ok=True)
@@ -119,6 +121,7 @@ def import_bouwdossiers(env, dms_dir: str, dest_dir: str):
     archief_metadata_path = dest_dir + os.sep + identificatiekenmerk + '.metadata'
     with open(archief_metadata_path, "w") as output:
         output.write(archief_metadata)
+    total_metadatafiles += 1
     # print (overdracht_bouwdossier)
     for bouwdossier in get_list_items(xml_top, 'bouwdossiers', 'bouwdossier'):
         dossier_id = bouwdossier.get('@oId')
@@ -156,6 +159,7 @@ def import_bouwdossiers(env, dms_dir: str, dest_dir: str):
         Path(dossier_dest_dir).mkdir(parents=True, exist_ok=True)
         with open(dossier_metadata_path, "w") as output:
             output.write(dossier_meta_data)
+        total_metadatafiles += 1
         bestand_dest_dir = dossier_dest_dir + dossier_id + os.sep
         Path(bestand_dest_dir).mkdir(parents=True, exist_ok=True)
         for bijlage in get_list_items(bouwdossier, 'bijlagen', 'bijlage'):
@@ -177,9 +181,9 @@ def import_bouwdossiers(env, dms_dir: str, dest_dir: str):
             basename, extension = os.path.splitext(document)
             bestand_data = {
                 'identificatiekenmerk': bestand_id,
-                'naam' : document,
-                'omschrijving': onderwerp,
-                'vorm': 1,
+                'naam' : onderwerp,
+                # 'omschrijving': onderwerp,
+                'vorm': 1,  # TODO
                 'formaat' : {
                     'identificatiekenmerk' : bestand_id,  # formaat identificatiekenmerk ????
                     'bestandsnaam' : {
@@ -199,13 +203,21 @@ def import_bouwdossiers(env, dms_dir: str, dest_dir: str):
             bestand_metadata_path = bestand_dest_dir + document + '.metadata'
             with open(bestand_metadata_path, "w") as output:
                 output.write(bestand_meta_data)
+            total_metadatafiles += 1
+    return total_metadatafiles
 
 
 if __name__ == "__main__":
-    dms_dir = '/Users/bart/tmp/NHA/Eerste overdracht 1875 - 1900'
-    dest_dir = dms_dir + '.sidecar'
+    logging.basicConfig(level=logging.INFO)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--idir", help="Input directory")
+    parser.add_argument("-o", "--odir", help="Output directory")
+    args = parser.parse_args()
+    dms_dir = args.idir
+    dest_dir = args.odir or dms_dir + '.sidecar'
     env = Environment(loader=PackageLoader('topx', 'templates'), trim_blocks=True, lstrip_blocks=True)
-    import_bouwdossiers(env, dms_dir, dest_dir)
+    total_metadatafiles = import_bouwdossiers(env, dms_dir, dest_dir)
+    log.info(f"Total metadata files : {total_metadatafiles}")
 
 
 
