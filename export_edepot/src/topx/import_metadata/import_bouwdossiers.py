@@ -79,6 +79,50 @@ def get_string_adres(adres: dict):
     return res
 
 
+def import_bestand(bestand_path, bestand_dest_dir, meta_data=None):
+    if meta_data is None:
+        meta_data = {}
+
+    path, document = os.path.split(bestand_path)
+    basename, extension = os.path.splitext(document)
+    extension = extension.lstrip(".")
+    bestand_id = basename
+    statinfo = os.stat(bestand_path)
+    bestand_size = statinfo.st_size
+    if not os.path.exists(bestand_path):
+        log.error(f"Missing : {bestand_path}")
+        return
+    if bestand_size == 0:
+        log.error(f"Bestand with size 0 : {document}")
+        return
+    sha256value = sha256(bestand_path)
+    shutil.copyfile(bestand_path, os.path.join(bestand_dest_dir, document))
+    new_meta_data = {
+        "aggregatie": "bestand",
+        "aggregatie_niveau": "Bestand",
+        "identificatiekenmerk": bestand_id,
+        "naam": basename,
+        # 'omschrijving': onderwerp,
+        "vorm": 1,
+        "formaat": {
+            "identificatiekenmerk": bestand_id,  # formaat identificatiekenmerk ????
+            "bestandsnaam": {"naam": basename, "extensie": extension},
+            "omvang": bestand_size,
+            "fysiekeintegriteit": {
+                "algoritme": "sha256",
+                "waarde": sha256value,
+                "datumentijd": datetime.now().isoformat(),
+            },
+        },
+    }
+    new_meta_data.update(meta_data)
+    bestand_template = env.get_template("ToPX-2.3-template.xml")
+    bestand_meta_data = bestand_template.render(data=new_meta_data)
+    bestand_metadata_path = os.path.join(bestand_dest_dir, document + ".metadata")
+    with open(bestand_metadata_path, "w") as output:
+        output.write(bestand_meta_data)
+
+
 def import_bouwdossiers_xml(env, dms_dir: str, dest_dir: str):
     """
     TopX structuur
@@ -192,23 +236,8 @@ def import_bouwdossiers_xml(env, dms_dir: str, dest_dir: str):
             document = bijlage["document"]["#text"]
             onderwerp = bijlage.get("onderwerp", {}).get("#text", "")
             bijlage_path = os.path.join(dms_dir, document)
-            statinfo = os.stat(bijlage_path)
-            bestand_size = statinfo.st_size
-            if bestand_size == 0:
-                log.error(f"Bestand with size 0 : {document}")
-                continue
-            sha256value = sha256(bijlage_path)
 
-            if not os.path.exists(bijlage_path):
-                log.error(f"Missing : {bijlage_path}")
-                continue
-            shutil.copyfile(bijlage_path, os.path.join(bestand_dest_dir, document))
-            bestanden_processed.add(bijlage_path)
-            basename, extension = os.path.splitext(document)
-            extension = extension.lstrip(".")
-            bestand_data = {
-                "aggregatie": "bestand",
-                "aggregatie_niveau": "Bestand",
+            meta_data = {
                 "identificatiekenmerk": bestand_id,
                 "naam": onderwerp,
                 # 'omschrijving': onderwerp,
@@ -219,22 +248,9 @@ def import_bouwdossiers_xml(env, dms_dir: str, dest_dir: str):
                     ],  # ?? Vertrouwelijkheid bevat openbaarheid
                     "jaar": bouwdosjaar,  # ? gebruik bouwdosjaar
                 },
-                "formaat": {
-                    "identificatiekenmerk": bestand_id,  # formaat identificatiekenmerk ????
-                    "bestandsnaam": {"naam": basename, "extensie": extension},
-                    "omvang": bestand_size,
-                    "fysiekeintegriteit": {
-                        "algoritme": "sha256",
-                        "waarde": sha256value,
-                        "datumentijd": datetime.now().isoformat(),
-                    },
-                },
             }
-            bestand_template = env.get_template("ToPX-2.3-template.xml")
-            bestand_meta_data = bestand_template.render(data=bestand_data)
-            bestand_metadata_path = bestand_dest_dir + document + ".metadata"
-            with open(bestand_metadata_path, "w") as output:
-                output.write(bestand_meta_data)
+            import_bestand(bijlage_path, bestand_dest_dir, meta_data=meta_data)
+            bestanden_processed.add(bijlage_path)
             total_metadatafiles += 1
     return total_metadatafiles, bestanden_processed
 
@@ -247,7 +263,7 @@ def import_bouwdossiers_rest(env, dms_dir, dest_dir, bestanden_processed):
                 continue
             fullpath = os.path.join(root, file)
             if fullpath not in bestanden_processed:
-                print(f"Not yet processed {fullpath}")
+                import_bestand(fullpath, dest_dir)
                 result += 1
     return result
 
@@ -270,5 +286,4 @@ if __name__ == "__main__":
         env, dms_dir, dest_dir, bestanden_processed
     )
     total_metadatafiles += extra_metafiles
-
     log.info(f"Total metadata files : {total_metadatafiles}")
