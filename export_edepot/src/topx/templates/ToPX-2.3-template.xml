@@ -1,47 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ToPX xmlns="http://www.nationaalarchief.nl/ToPX/v2.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<bestand>
+	<{{ data.aggregatie }}>
 		<identificatiekenmerk>{{ data.identificatiekenmerk }}</identificatiekenmerk>
-		<aggregatieniveau>Bestand</aggregatieniveau>
+		<aggregatieniveau>{{ data.aggregatie_niveau }}</aggregatieniveau>
 		<naam>{{ data.naam }}</naam>
 		{% if data.classificatie %}
 		<classificatie>
-			<code>Code</code>
-				<omschrijving>Omschrijving</omschrijving>
-			<bron>Bron</bron>
+			<code>{{ data.classificatie.code }}</code>
+			<omschrijving>{{ data.classificatie.omschrijving }}</omschrijving>
+			<bron>{{ data.classificatie.bron }}</bron>
 			<datumOfPeriode>
-				<datum>2006-05-04</datum>
+				<datum>{{ data.classificatie.datum}}</datum>
 			</datumOfPeriode>
 		</classificatie>
 		{% endif %}
-		{% if data.omschrijving %}
+	    {% if data.omschrijving is defined %}
 		<omschrijving>{{ data.omschrijving }}</omschrijving>
 		{% endif %}
-		<plaats/>
+		{% if data.plaats %}
+		<plaats>{{ data.plaats }}</plaats>
+		{% endif %}
 		{% if data.dekking %}
 		<dekking>
+		    {% if data.dekking.intijd %}
 			<inTijd>
 				<begin>
-					<jaar>2016</jaar>
+					<jaar>{{ data.dekking.intijd.begin.jaar }}</jaar>
 				</begin>
 				<eind>
-					<jaar>2016</jaar>
+					<jaar>{{ data.dekking.intijd.eind.jaar }}</jaar>
 				</eind>
 			</inTijd>
-			<geografischGebied/>
+			{% endif %}
+			{% if data.dekking.geografischgebied %}
+			{% for adres in data.dekking.geografischgebied.adressen %}
+			<geografischGebied>{{ adres }}</geografischGebied>
+			{% endfor %}
+			{% endif %}
 		</dekking>
 		{% endif %}
 		{% if data.externIdentificatiekenmerk %}
 		<externIdentificatiekenmerk>
+		    {% if data.externIdentificatiekenmerk.kenmerkSysteem %}
+		    <kenmerkSysteem>{{ data.externIdentificatiekenmerk.kenmerkSysteem }}</kenmerkSysteem>
+		    {% else %}
 			<kenmerkSysteem/>
-			<nummerBinnenSysteem>Nummer binnen het systeem</nummerBinnenSysteem>
+			{% endif %}
+			<nummerBinnenSysteem>{{ data.externIdentificatiekenmerk.nummerBinnenSysteem }}</nummerBinnenSysteem>
 		</externIdentificatiekenmerk>
 		{% endif %}
 		<taal/>
 		{% if data.eventGeschiedenis %}
 		<eventGeschiedenis>
 			<datumOfPeriode>
-				<datum>2080-01-31</datum>
+				<datum>2006-05-04</datum>
 			</datumOfPeriode>
 			<type>Type</type>
 			<beschrijving/>
@@ -51,7 +63,7 @@
 		{% if data.eventPlan %}
 		<eventPlan>
 			<datumOfPeriode>
-				<datum>2080-01-31</datum>
+				<datum>2006-05-04</datum>
 			</datumOfPeriode>
 			<type>Conversie</type>
 			<beschrijving/>
@@ -61,18 +73,18 @@
         {% if data.relatie %}
 		<relatie>
 			<relatieID>Relatie ID</relatieID>
-			<typeRelatie>Relatie type</typeRelatie>
+			<typeRelatie>Type relatie</typeRelatie>
 			<datumOfPeriode>
-				<datum>2080-01-31</datum>
+				<datum>2006-05-04</datum>
 			</datumOfPeriode>
 		</relatie>
 		{% endif %}
 		{% if data.context %}
 		<context>
 			<actor>
-				<identificatiekenmerk>Identificatiekenmerk</identificatiekenmerk>
+				<identificatiekenmerk>Identicatiekenmerk</identificatiekenmerk>
 				<aggregatieniveau/>
-				<geautoriseerdeNaam>Geautoriseerde naam</geautoriseerdeNaam>
+				<geautoriseerdeNaam>Geatutoiseerde naam</geautoriseerdeNaam>
 				<plaats/>
 				<jurisdictie/>
 			</actor>
@@ -87,7 +99,7 @@
 		<gebruiksrechten>
 			<omschrijvingVoorwaarden>Geen gebruiksrechten</omschrijvingVoorwaarden>
 			<datumOfPeriode>
-				<jaar>2016</jaar>
+				<jaar>2080</jaar>
 			</datumOfPeriode>
 		</gebruiksrechten>
 		{% endif %}
@@ -101,17 +113,25 @@
 		{% endif %}
 		{% if data.openbaarheid %}
 		<openbaarheid>
-			<omschrijvingBeperkingen>Openbaar</omschrijvingBeperkingen>
+			<omschrijvingBeperkingen>{{ data.openbaarheid.openbaar }}</omschrijvingBeperkingen>
 			<datumOfPeriode>
-				<jaar>2080</jaar>
+			    {% if data.openbaarheid.jaar %}
+				<jaar>{{ data.openbaarheid.jaar }}</jaar>
+				{% elif data.openbaarheid.datum %}
+				<datum>{{ data.openbaarheid.datum }}</datum>
+				{% elif data.openbaarheid.datumEnTijd %}
+				<datumEnTijd>{{ data.openbaarheid.datumEnTijd }}</datumEnTijd>
+				{% endif %}
 			</datumOfPeriode>
 		</openbaarheid>
 		{% endif %}
-        {% if data.vorm %}
+		{% if data.vorm %}
 		<vorm>
-			<redactieGenre>Genre</redactieGenre>
-			<verschijningsvorm/>
-			<structuur/>
+			{% if data.vorm.redactieGenre %}
+			<redactieGenre>{{ data.vorm.redactieGenre }}</redactieGenre>
+			{% else %}
+			<redactieGenre />
+			{% endif %}
 		</vorm>
 		{% endif %}
 		{% if data.integriteit %}
@@ -157,7 +177,7 @@
 			<relatie/>
 		</formaat>
 		{% endif %}
-
-		<generiekeMetadata/>
-	</bestand>
+		<generiekeMetadata>
+		</generiekeMetadata>
+	</{{ data.aggregatie }}>
 </ToPX>

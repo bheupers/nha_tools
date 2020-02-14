@@ -8,8 +8,9 @@ from pathlib import Path
 import shutil
 import xmltodict
 
-
 log = logging.getLogger(__name__)
+
+IGNORE_FILES = {".DS_Store"}
 
 
 def md5(fname):
@@ -22,8 +23,8 @@ def md5(fname):
 
 def sha256(fname):
     sha256_hash = hashlib.sha256()
-    with open(fname,"rb") as f:
-        for chunk in iter(lambda: f.read(4096),b""):
+    with open(fname, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
             sha256_hash.update(chunk)
     return sha256_hash.hexdigest()
 
@@ -39,7 +40,7 @@ def get_list_items(d, key1, key2):
     return []
 
 
-def find_first_xml_file(dms_dir:str):
+def find_first_xml_file(dms_dir: str):
     dms_xml_file = None
     for file in os.listdir(dms_dir):
         if file.endswith(".xml"):
@@ -48,36 +49,37 @@ def find_first_xml_file(dms_dir:str):
 
     return dms_xml_file
 
-def get_string_adres(adres: dict):
-    straatnaam = adres['adresstraatnaam'].get('#text','')
-    aanduiding = adres['adresaanduiding'].get('#text','')
-    huisnummer = adres['adreshuisnummer'].get('#text','')
-    huisletter = adres['adreshuisletter'].get('#text','')
-    huisnummertoevoeging = adres['adreshuisnummertoevoeging'].get('#text','')
-    postcode = adres['adrespostcode'].get('#text','')
-    woonplaats = adres['adreswoonplaats'].get('#text','')
 
-    res = ''
+def get_string_adres(adres: dict):
+    straatnaam = adres["adresstraatnaam"].get("#text", "")
+    aanduiding = adres["adresaanduiding"].get("#text", "")
+    huisnummer = adres["adreshuisnummer"].get("#text", "")
+    huisletter = adres["adreshuisletter"].get("#text", "")
+    huisnummertoevoeging = adres["adreshuisnummertoevoeging"].get("#text", "")
+    postcode = adres["adrespostcode"].get("#text", "")
+    woonplaats = adres["adreswoonplaats"].get("#text", "")
+
+    res = ""
     if aanduiding:
-        res += aanduiding + ' '
+        res += aanduiding + " "
     if straatnaam:
         res += straatnaam
     if huisnummer:
-        res += ' ' + huisnummer
+        res += " " + huisnummer
     if huisletter:
         res += huisletter
     if huisnummertoevoeging:
-        res += ' ' + huisnummertoevoeging
+        res += " " + huisnummertoevoeging
     if postcode or woonplaats:
-        res += ','
+        res += ","
     if postcode:
-        res += ' ' + postcode
+        res += " " + postcode
     if woonplaats:
-        res += ' ' + woonplaats
+        res += " " + woonplaats
     return res
 
 
-def import_bouwdossiers(env, dms_dir: str, dest_dir: str):
+def import_bouwdossiers_xml(env, dms_dir: str, dest_dir: str):
     """
     TopX structuur
 
@@ -87,9 +89,10 @@ def import_bouwdossiers(env, dms_dir: str, dest_dir: str):
 
     Geen Serie of Record??
     """
+    bestanden_processed = set()
     dms_xml_file = find_first_xml_file(dms_dir)
     if not dms_xml_file:
-        log.error('Geen XML gevonden in {dms_dir}')
+        log.error("Geen XML gevonden in {dms_dir}")
         return
 
     total_metadatafiles = 0
@@ -102,70 +105,92 @@ def import_bouwdossiers(env, dms_dir: str, dest_dir: str):
         xml = xmltodict.parse(fd.read())
 
     file_base = os.path.splitext(dms_xml_file)[0]
-    xml_top = xml.get('overdracht_bouwdossier')
-    identificatiekenmerk = xml_top['@id']
+    xml_top = xml.get("overdracht_bouwdossier")
+    identificatiekenmerk = xml_top["@id"]
     archief_data = {
-        'identificatiekenmerk': identificatiekenmerk,
-        'naam': xml_top['omschrijvingpublicatie']['#text'],
-        'omschrijving': '',
-        'classificatie' : {
-            'code': xml_top['@classid'],
-            'omschrijving': xml_top['action'],  # ??
-            'datum': datetime.fromisoformat(xml_top['datumpublicatie']['@valuecode']).strftime("%Y-%m-%d"),  # ???
-            'bron': xml_top['@soort'],  # ??
-
+        "aggregatie": "aggregatie",
+        "aggregatie_niveau": "Archief",
+        "identificatiekenmerk": identificatiekenmerk,
+        "naam": xml_top["omschrijvingpublicatie"]["#text"],
+        "omschrijving": "",
+        "classificatie": {
+            "code": xml_top["@classid"],
+            "omschrijving": xml_top["action"],  # ??
+            "datum": datetime.fromisoformat(
+                xml_top["datumpublicatie"]["@valuecode"]
+            ).strftime(
+                "%Y-%m-%d"
+            ),  # ???
+            "bron": xml_top["@soort"],  # ??
         },
     }
-    archief_template = env.get_template('ToPX-2.3_Archief_max.xml.jinja')
+    archief_template = env.get_template("ToPX-2.3-template.xml")
     archief_metadata = archief_template.render(data=archief_data)
-    archief_metadata_path = dest_dir + os.sep + identificatiekenmerk + '.metadata'
+    archief_dir = dest_dir + os.sep + identificatiekenmerk + os.sep
+    Path(archief_dir).mkdir(parents=True, exist_ok=True)
+    archief_metadata_path = archief_dir + identificatiekenmerk + ".metadata"
     with open(archief_metadata_path, "w") as output:
         output.write(archief_metadata)
     total_metadatafiles += 1
-    # print (overdracht_bouwdossier)
-    for bouwdossier in get_list_items(xml_top, 'bouwdossiers', 'bouwdossier'):
-        dossier_id = bouwdossier.get('@oId')
-        # print(f"oId:{dossier_id}")
-        dossier_template = env.get_template('ToPX-2.3_Dossier_max.xml.jinja')
+    for bouwdossier in get_list_items(xml_top, "bouwdossiers", "bouwdossier"):
+        dossier_id = bouwdossier.get("@oId")
+        dossier_template = env.get_template("ToPX-2.3-template.xml")
+        bouwdosjaar = bouwdossier.get("bouwdosjaar", {}).get("#text")
+        omschrijving = " ".join(
+            [
+                bouwdossier["bouwdoscategorie"].get("#text", ""),
+                bouwdossier["bouwdosomschrijving"].get("#text", ""),
+                bouwdossier["omschrijving"].get("#text", ""),
+            ]
+        )
+
         bouwdossier_data = {
-            'identificatiekenmerk': dossier_id,
-            'naam': bouwdossier['dossiernummer']['#text'],  # ?? what is naam
-            'omschrijving': bouwdossier['omschrijving']['#text'],
+            "aggregatie": "aggregatie",
+            "aggregatie_niveau": "Dossier",
+            "identificatiekenmerk": dossier_id,
+            "naam": bouwdossier["dossiernummer"]["#text"],  # ?? what is naam
+            "omschrijving": omschrijving,
+            "openbaarheid": {
+                "openbaar": bouwdossier["vertrouwelijkheid"][
+                    "#text"
+                ],  # ?? Vertrouwelijkheid bevat openbaarheid
+                "jaar": bouwdosjaar,
+            },
+            "externIdentificatiekenmerk": {
+                "nummerBinnenSysteem": bouwdossier["bouwvergnummer"]["#text"],
+                "kenmerkSysteem": "Bouwvergunningnummer",
+            },
         }
-        bouwdosjaar = bouwdossier.get('bouwdosjaar', {}).get('#text')
         dekking = None
         if bouwdosjaar:
             dekking = {
-                'intijd': {
-                    'begin': {
-                        'jaar': bouwdosjaar
-                    },
-                    'eind': {
-                        'jaar': bouwdosjaar
-                    }
+                "intijd": {
+                    "begin": {"jaar": bouwdosjaar},
+                    "eind": {"jaar": bouwdosjaar},
                 }
             }
-        adressen = [get_string_adres(adres) for adres in get_list_items(bouwdossier, 'adressen', 'adres')]
+        adressen = [
+            get_string_adres(adres)
+            for adres in get_list_items(bouwdossier, "adressen", "adres")
+        ]
         if adressen:
-            dekking['geografischgebied'] = {
-                'adressen': adressen
-            }
+            dekking["geografischgebied"] = {"adressen": adressen}
         if dekking:
-            bouwdossier_data['dekking'] = dekking
+            bouwdossier_data["dekking"] = dekking
 
         dossier_meta_data = dossier_template.render(data=bouwdossier_data)
-        dossier_dest_dir = dest_dir + os.sep + identificatiekenmerk + os.sep
-        dossier_metadata_path = dossier_dest_dir + dossier_id + '.metadata'
+        dossier_dest_dir = archief_dir + dossier_id + os.sep
+        dossier_metadata_path = dossier_dest_dir + dossier_id + ".metadata"
         Path(dossier_dest_dir).mkdir(parents=True, exist_ok=True)
         with open(dossier_metadata_path, "w") as output:
             output.write(dossier_meta_data)
         total_metadatafiles += 1
-        bestand_dest_dir = dossier_dest_dir + dossier_id + os.sep
+        bestand_dest_dir = dossier_dest_dir
         Path(bestand_dest_dir).mkdir(parents=True, exist_ok=True)
-        for bijlage in get_list_items(bouwdossier, 'bijlagen', 'bijlage'):
-            bestand_id = bijlage['@oId']
-            document = bijlage['document']['#text']
-            onderwerp = bijlage.get('onderwerp', {}).get('#text', '')
+        for bijlage in get_list_items(bouwdossier, "bijlagen", "bijlage"):
+            bestand_id = bijlage["@oId"]
+            document = bijlage["document"]["#text"]
+            onderwerp = bijlage.get("onderwerp", {}).get("#text", "")
             bijlage_path = os.path.join(dms_dir, document)
             statinfo = os.stat(bijlage_path)
             bestand_size = statinfo.st_size
@@ -178,33 +203,53 @@ def import_bouwdossiers(env, dms_dir: str, dest_dir: str):
                 log.error(f"Missing : {bijlage_path}")
                 continue
             shutil.copyfile(bijlage_path, os.path.join(bestand_dest_dir, document))
+            bestanden_processed.add(bijlage_path)
             basename, extension = os.path.splitext(document)
+            extension = extension.lstrip(".")
             bestand_data = {
-                'identificatiekenmerk': bestand_id,
-                'naam' : onderwerp,
+                "aggregatie": "bestand",
+                "aggregatie_niveau": "Bestand",
+                "identificatiekenmerk": bestand_id,
+                "naam": onderwerp,
                 # 'omschrijving': onderwerp,
-                'vorm': 1,  # TODO
-                'formaat' : {
-                    'identificatiekenmerk' : bestand_id,  # formaat identificatiekenmerk ????
-                    'bestandsnaam' : {
-                        'naam' : basename,
-                        'extensie': extension
+                "vorm": {"redactieGenre": bijlage["producthulpcategorie"].get("#text")},
+                "openbaarheid": {
+                    "openbaar": bijlage["vertrouwelijkheid"][
+                        "#text"
+                    ],  # ?? Vertrouwelijkheid bevat openbaarheid
+                    "jaar": bouwdosjaar,  # ? gebruik bouwdosjaar
+                },
+                "formaat": {
+                    "identificatiekenmerk": bestand_id,  # formaat identificatiekenmerk ????
+                    "bestandsnaam": {"naam": basename, "extensie": extension},
+                    "omvang": bestand_size,
+                    "fysiekeintegriteit": {
+                        "algoritme": "sha256",
+                        "waarde": sha256value,
+                        "datumentijd": datetime.now().isoformat(),
                     },
-                    'omvang': bestand_size,
-                    'fysiekeintegriteit' : {
-                        'algoritme' : 'sha256',
-                        'waarde': sha256value,
-                        'datumentijd': datetime.now().isoformat()
-                    }
-                }
+                },
             }
-            bestand_template = env.get_template('ToPX-2.3_Bestand_max.xml.jinja')
+            bestand_template = env.get_template("ToPX-2.3-template.xml")
             bestand_meta_data = bestand_template.render(data=bestand_data)
-            bestand_metadata_path = bestand_dest_dir + document + '.metadata'
+            bestand_metadata_path = bestand_dest_dir + document + ".metadata"
             with open(bestand_metadata_path, "w") as output:
                 output.write(bestand_meta_data)
             total_metadatafiles += 1
-    return total_metadatafiles
+    return total_metadatafiles, bestanden_processed
+
+
+def import_bouwdossiers_rest(env, dms_dir, dest_dir, bestanden_processed):
+    result = 0
+    for root, subdirs, files in os.walk(dms_dir):
+        for file in files:
+            if file in IGNORE_FILES:
+                continue
+            fullpath = os.path.join(root, file)
+            if fullpath not in bestanden_processed:
+                print(f"Not yet processed {fullpath}")
+                result += 1
+    return result
 
 
 if __name__ == "__main__":
@@ -214,15 +259,16 @@ if __name__ == "__main__":
     parser.add_argument("-o", "--odir", help="Output directory")
     args = parser.parse_args()
     dms_dir = args.idir
-    dest_dir = args.odir or dms_dir + '.sidecar'
-    env = Environment(loader=PackageLoader('topx', 'templates'), trim_blocks=True, lstrip_blocks=True)
-    total_metadatafiles = import_bouwdossiers(env, dms_dir, dest_dir)
+    dest_dir = args.odir or dms_dir + ".sidecar"
+    env = Environment(
+        loader=PackageLoader("topx", "templates"), trim_blocks=True, lstrip_blocks=True
+    )
+    total_metadatafiles, bestanden_processed = import_bouwdossiers_xml(
+        env, dms_dir, dest_dir
+    )
+    extra_metafiles = import_bouwdossiers_rest(
+        env, dms_dir, dest_dir, bestanden_processed
+    )
+    total_metadatafiles += extra_metafiles
+
     log.info(f"Total metadata files : {total_metadatafiles}")
-
-
-
-
-
-
-
-
