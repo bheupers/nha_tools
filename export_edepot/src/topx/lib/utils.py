@@ -3,6 +3,7 @@ import logging
 import os
 import shutil
 from datetime import datetime
+from pathlib import Path
 
 log = logging.getLogger(__name__)
 
@@ -116,29 +117,48 @@ def import_bestand(bestand_path, bestand_dest_dir, template, meta_data=None):
         output.write(bestand_meta_data)
 
 
-def import_archief(archief_path, archief_dest_dir, template, meta_data=None):
+def import_archief(archief_path, dest_dir, template, meta_data=None):
+    if meta_data is None:
+        meta_data = {}
 
-    identificatiekenmerk = xml_top["@id"]
-    archief_data = {
+    path = os.path.split(archief_path)
+    # Determine defaults
+
+    new_meta_data = {
         "aggregatie": "aggregatie",
         "aggregatie_niveau": "Archief",
-        "identificatiekenmerk": identificatiekenmerk,
-        "naam": xml_top["omschrijvingpublicatie"]["#text"],
-        "omschrijving": "",
-        "classificatie": {
-            "code": xml_top["@classid"],
-            "omschrijving": xml_top["action"],  # ??
-            "datum": datetime.fromisoformat(
-                xml_top["datumpublicatie"]["@valuecode"]
-            ).strftime(
-                "%Y-%m-%d"
-            ),  # ???
-            "bron": xml_top["@soort"],  # ??
-        },
+        "identificatiekenmerk": path[-1],
+        "naam": path[-1],
     }
-    archief_metadata = template.render(data=archief_data)
+    new_meta_data.update(meta_data)
+    identificatiekenmerk = new_meta_data["identificatiekenmerk"]
+    archief_metadata = template.render(data=new_meta_data)
     archief_dir = dest_dir + os.sep + identificatiekenmerk + os.sep
     Path(archief_dir).mkdir(parents=True, exist_ok=True)
     archief_metadata_path = archief_dir + identificatiekenmerk + ".metadata"
     with open(archief_metadata_path, "w") as output:
         output.write(archief_metadata)
+    return archief_dir
+
+
+def import_dossier(dossier_path, dest_dir, template, meta_data=None):
+    if meta_data is None:
+        meta_data = {}
+
+    path = os.path.split(dossier_path)
+    # Determine defaults
+    new_meta_data = {
+        "aggregatie": "aggregatie",
+        "aggregatie_niveau": "Dossier",
+        "identificatiekenmerk": path[-1],
+        "naam": path[-1],
+    }
+    new_meta_data.update(meta_data)
+    identificatiekenmerk = new_meta_data["identificatiekenmerk"]
+    dossier_metadata = template.render(data=new_meta_data)
+    dossier_dir = dest_dir + os.sep + identificatiekenmerk + os.sep
+    Path(dossier_dir).mkdir(parents=True, exist_ok=True)
+    archief_metadata_path = dossier_dir + identificatiekenmerk + ".metadata"
+    with open(archief_metadata_path, "w") as output:
+        output.write(dossier_metadata)
+    return dossier_dir

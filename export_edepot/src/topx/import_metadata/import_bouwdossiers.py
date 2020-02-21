@@ -12,6 +12,8 @@ from topx.lib.utils import (
     find_first_file_extension,
     get_string_adres,
     import_bestand,
+    import_archief,
+    import_dossier,
 )
 from topx.settings import IGNORE_FILES
 
@@ -47,11 +49,11 @@ def import_bouwdossiers_xml(dms_dir: str, dest_dir: str, template):
     xml_top = xml.get("overdracht_bouwdossier")
     identificatiekenmerk = xml_top["@id"]
     archief_data = {
-        "aggregatie": "aggregatie",
-        "aggregatie_niveau": "Archief",
+        #        "aggregatie": "aggregatie",
+        #        "aggregatie_niveau": "Archief",
         "identificatiekenmerk": identificatiekenmerk,
         "naam": xml_top["omschrijvingpublicatie"]["#text"],
-        "omschrijving": "",
+        #        "omschrijving": "",
         "classificatie": {
             "code": xml_top["@classid"],
             "omschrijving": xml_top["action"],  # ??
@@ -63,13 +65,8 @@ def import_bouwdossiers_xml(dms_dir: str, dest_dir: str, template):
             "bron": xml_top["@soort"],  # ??
         },
     }
-    archief_template = env.get_template("ToPX-2.3-template.xml")
-    archief_metadata = archief_template.render(data=archief_data)
-    archief_dir = dest_dir + os.sep + identificatiekenmerk + os.sep
-    Path(archief_dir).mkdir(parents=True, exist_ok=True)
-    archief_metadata_path = archief_dir + identificatiekenmerk + ".metadata"
-    with open(archief_metadata_path, "w") as output:
-        output.write(archief_metadata)
+    archief_dir = import_archief(dms_dir, dest_dir, template, meta_data=archief_data)
+
     total_metadatafiles += 1
     for bouwdossier in get_list_items(xml_top, "bouwdossiers", "bouwdossier"):
         dossier_id = bouwdossier.get("@oId")
@@ -116,12 +113,9 @@ def import_bouwdossiers_xml(dms_dir: str, dest_dir: str, template):
         if dekking:
             bouwdossier_data["dekking"] = dekking
 
-        dossier_meta_data = template.render(data=bouwdossier_data)
-        dossier_dest_dir = archief_dir + dossier_id + os.sep
-        dossier_metadata_path = dossier_dest_dir + dossier_id + ".metadata"
-        Path(dossier_dest_dir).mkdir(parents=True, exist_ok=True)
-        with open(dossier_metadata_path, "w") as output:
-            output.write(dossier_meta_data)
+        dossier_dest_dir = import_dossier(
+            archief_dir, archief_dir, template, meta_data=bouwdossier_data
+        )
         total_metadatafiles += 1
         bestand_dest_dir = dossier_dest_dir
         Path(bestand_dest_dir).mkdir(parents=True, exist_ok=True)
@@ -134,7 +128,6 @@ def import_bouwdossiers_xml(dms_dir: str, dest_dir: str, template):
             meta_data = {
                 "identificatiekenmerk": bestand_id,
                 "naam": onderwerp,
-                # 'omschrijving': onderwerp,
                 "vorm": {"redactieGenre": bijlage["producthulpcategorie"].get("#text")},
                 "openbaarheid": {
                     "openbaar": bijlage["vertrouwelijkheid"][
@@ -148,7 +141,7 @@ def import_bouwdossiers_xml(dms_dir: str, dest_dir: str, template):
             )
             bestanden_processed.add(bijlage_path)
             total_metadatafiles += 1
-    return total_metadatafiles, bestanden_processed
+    return total_metadatafiles, bestanden_processed, archief_dir
 
 
 def import_bouwdossiers_rest(dms_dir, dest_dir, template, bestanden_processed):
@@ -176,11 +169,11 @@ if __name__ == "__main__":
         loader=PackageLoader("topx", "templates"), trim_blocks=True, lstrip_blocks=True
     )
     template = env.get_template("ToPX-2.3-template.xml")
-    total_metadatafiles, bestanden_processed = import_bouwdossiers_xml(
+    total_metadatafiles, bestanden_processed, archief_dir = import_bouwdossiers_xml(
         dms_dir, dest_dir, template
     )
     extra_metafiles = import_bouwdossiers_rest(
-        dms_dir, dest_dir, template, bestanden_processed
+        dms_dir, archief_dir, template, bestanden_processed
     )
     total_metadatafiles += extra_metafiles
     log.info(f"Total metadata files : {total_metadatafiles}")
