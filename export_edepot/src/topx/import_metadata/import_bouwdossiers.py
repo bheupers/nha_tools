@@ -114,7 +114,11 @@ def import_bouwdossiers_xml(dms_dir: str, dest_dir: str, template):
             bouwdossier_data["dekking"] = dekking
 
         dossier_dest_dir = import_dossier(
-            archief_dir, archief_dir, template, meta_data=bouwdossier_data
+            archief_dir,
+            archief_dir,
+            template,
+            meta_data=bouwdossier_data,
+            relatie=identificatiekenmerk,
         )
         total_metadatafiles += 1
         bestand_dest_dir = dossier_dest_dir
@@ -137,7 +141,11 @@ def import_bouwdossiers_xml(dms_dir: str, dest_dir: str, template):
                 },
             }
             import_bestand(
-                bijlage_path, bestand_dest_dir, template, meta_data=meta_data
+                bijlage_path,
+                bestand_dest_dir,
+                template,
+                meta_data=meta_data,
+                relatie=dossier_id,
             )
             bestanden_processed.add(bijlage_path)
             total_metadatafiles += 1

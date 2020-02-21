@@ -74,7 +74,9 @@ def get_string_adres(adres: dict):
     return res
 
 
-def import_bestand(bestand_path, bestand_dest_dir, template, meta_data=None):
+def import_bestand(
+    bestand_path, bestand_dest_dir, template, meta_data=None, relatie=None
+):
     if meta_data is None:
         meta_data = {}
 
@@ -110,6 +112,12 @@ def import_bestand(bestand_path, bestand_dest_dir, template, meta_data=None):
             },
         },
     }
+    if relatie:
+        new_meta_data["relatie"] = {
+            "relatieID": relatie,
+            "typeRelatie": "Maakt deel uit van",
+        }
+
     new_meta_data.update(meta_data)
     bestand_meta_data = template.render(data=new_meta_data)
     bestand_metadata_path = os.path.join(bestand_dest_dir, document + ".metadata")
@@ -141,7 +149,7 @@ def import_archief(archief_path, dest_dir, template, meta_data=None):
     return archief_dir
 
 
-def import_dossier(dossier_path, dest_dir, template, meta_data=None):
+def import_dossier(dossier_path, dest_dir, template, meta_data=None, relatie=None):
     if meta_data is None:
         meta_data = {}
 
@@ -153,6 +161,12 @@ def import_dossier(dossier_path, dest_dir, template, meta_data=None):
         "identificatiekenmerk": path[-1],
         "naam": path[-1],
     }
+    if relatie:
+        new_meta_data["relatie"] = {
+            "relatieID": relatie,
+            "typeRelatie": "Maakt deel uit van",
+        }
+
     new_meta_data.update(meta_data)
     identificatiekenmerk = new_meta_data["identificatiekenmerk"]
     dossier_metadata = template.render(data=new_meta_data)

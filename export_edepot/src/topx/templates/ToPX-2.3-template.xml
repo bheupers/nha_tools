@@ -72,11 +72,13 @@
 		{% endif %}
         {% if data.relatie %}
 		<relatie>
-			<relatieID>Relatie ID</relatieID>
-			<typeRelatie>Type relatie</typeRelatie>
+			<relatieID>{{ data.relatie.relatieID }}</relatieID>
+			<typeRelatie>{{ data.relatie.typeRelatie }}</typeRelatie>
+			{% if data.relatie.datumOfPeriode %}
 			<datumOfPeriode>
 				<datum>2006-05-04</datum>
 			</datumOfPeriode>
+			{% endif %}
 		</relatie>
 		{% endif %}
 		{% if data.context %}
@@ -165,7 +167,7 @@
 			<datumAanmaak>2080-01-31</datumAanmaak>
 			{% endif %}
 			{% if data.formaat.eventplan %}
- 			<eventPlan>
+			<eventPlan>
 				<datumOfPeriode>
 					<datum>2080-01-31</datum>
 				</datumOfPeriode>
