@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<ul style="list-style: none">
+  <li>Agenda
+    <ul id="list">
+      <li><a href="#" data-value="07.05.19%20Heemstede%20Cie%20Samenleving.aac#t=00:00:00">1.__Opening en vaststellen agenda cie. Samenleving 7 mei 2019</a></li>
+      <li><a href="#" data-value="07.05.19%20Heemstede%20Cie%20Samenleving.aac#t=00:01:30">2.__Spreekrecht inwoners</a></li>
+      <li><a href="#" data-value="07.05.19%20Heemstede%20Cie%20Samenleving.aac#t=00:01:33">3.__Vervanging toplaag MHC Alliance</a></li>
+      <li><a href="#" data-value="07.05.19%20Heemstede%20Cie%20Samenleving.aac#t=00:19:27">4.__Ontwerpbegroting 2020 Werkvoorzieningsschap Zuid-Kennemerland (Paswerk)</a></li>
+      <li><a href="#" data-value="07.05.19%20Heemstede%20Cie%20Samenleving.aac#t=00:36:25">5.__Maatschappelijk Verantwoord Inkopen (MVI): speerpunt Social Return On Investment (SROI)</a></li>
+      <li><a href="#" data-value="07.05.19%20Heemstede%20Cie%20Samenleving.aac#t=01:04:52">6.__Zienswijze Ontwerpbegroting GR Schoolverzuim en Voortijdig Schoolverlaten West-Kennemerland</a></li>
+      <li><a href="#" data-value="07.05.19%20Heemstede%20Cie%20Samenleving.aac#t=01:23:29">7.__Planning Nota Integraal Veiligheidsbeleid 2019-2023 (B)</a></li>
+      <li><a href="#" data-value="07.05.19%20Heemstede%20Cie%20Samenleving.aac#t=01:11:28">8.__Lokale inclusie agenda personen met een handicap</a></li>
+      <li><a href="#" data-value="07.05.19%20Heemstede%20Cie%20Samenleving.aac#t=02:00:37">9.__Ontwikkelingen Sociaal Domein inclusief Paswerk en RegioRijder</a></li>
+      <li><a href="#" data-value="07.05.19%20Heemstede%20Cie%20Samenleving.aac#t=02:12:11">10.__Ontwikkelingen participatie</a></li>
+      <li><a href="#" data-value="07.05.19%20Heemstede%20Cie%20Samenleving.aac#t=02:32:38">11.__Actiepuntenlijst</a></li>
+      <li><a href="#" data-value="07.05.19%20Heemstede%20Cie%20Samenleving.aac#t=02:46:08">12.__Wat verder ter tafel komt</a></li>
+      <li><a href="#" data-value="07.05.19%20Heemstede%20Cie%20Samenleving.aac#t=02:53:08">13.__Sluiting</a></li>
+    </ul>
+  </li>
+</ul>
+
+<audio id="audio" controls>
+  <source id="audioSource" src="07.05.19%20Heemstede%20Cie%20Samenleving.aac" type="audio/mp4">
+Your browser does not support the audio element.
+</audio>
+
+<script type="text/javascript">
+list.onclick = function(e) {
+  e.preventDefault();
+
+  var elm = e.target;
+  var audio = document.getElementById('audio');
+
+  var source = document.getElementById('audioSource');
+  source.src = elm.getAttribute('data-value');
+
+  audio.load(); //call this to just preload the audio without playing
+  audio.play(); //call this to play the song right away
+};
+</script>
+
+
+</body>
+</html>
+
