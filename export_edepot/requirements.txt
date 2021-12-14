@@ -1,5 +1,5 @@
 Jinja2==2.11.3
-lxml==4.6.3
+lxml==4.6.5
 MarkupSafe==1.1.1
 xlrd==1.2.0
 xmltodict==0.12.0
